@@ -13,6 +13,7 @@ import { CirclePlus } from 'lucide-react';
 import Link from "next/link";
 import { db } from "@/db";
 import { Invoices } from "@/db/schema";
+import { cn } from "@/lib/utils";
 
 export default async function Home() {
   const results = await db.select().from(Invoices)
@@ -62,30 +63,38 @@ export default async function Home() {
           {results.map((result) => {
             return (
               <TableRow key={result.id}>
-                <TableCell className="text-left p-4">
-                  <span className="font-semibold">
+                <TableCell className="text-left p-0">
+                  <Link href={`/invoices/${result.id}`} className="font-semibold p-4 block">
                     {new Date(result.createTs).toLocaleDateString()}
-                  </span>
+                  </Link>
                 </TableCell>
-                <TableCell className="text-left p-4">
-                  <span className="font-semibold">
+                <TableCell className="text-left p-0">
+                  <Link href={`/invoices/${result.id}`} className="font-semibold p-4 block">
                     Jared Lemke
-                  </span>
+                  </Link>
                 </TableCell>
-                <TableCell className="text-left p-4">
-                  <span>
+                <TableCell className="text-left p-0">
+                  <Link href={`/invoices/${result.id}`} className="p-4 block">
                     jared@lemke.com
-                  </span>
+                  </Link>
                 </TableCell>
-                <TableCell className="text-center p-4">
-                  <Badge className="rounded-full">
-                    {result.status}
-                  </Badge>
+                <TableCell className="text-center p-0">
+                  <Link href={`/invoices/${result.id}`} className="p-4 block">
+                    <Badge className={cn(
+                      "rounded-full capitalize",
+                      result.status === 'open' && 'bg-blue-500',
+                      result.status === 'paid' && 'bg-green-500',
+                      result.status === 'void' && 'bg-gray-500',
+                      result.status === 'uncollectible' && 'bg-red-500',
+                    )}>
+                      {result.status}
+                    </Badge>
+                  </Link>
                 </TableCell>
-                <TableCell className="text-right p-4">
-                  <span className="font-semibold">
+                <TableCell className="text-right p-0">
+                  <Link href={`/invoices/${result.id}`} className="font-semibold p-4 block">
                     ${(result.amount / 100).toFixed(2)}
-                  </span>
+                  </Link>
                 </TableCell>
               </TableRow>
             )
