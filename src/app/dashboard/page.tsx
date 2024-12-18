@@ -11,8 +11,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from 'lucide-react';
 import Link from "next/link";
+import { db } from "@/db";
+import { Invoices } from "@/db/schema";
 
-export default function Home() {
+export default async function Home() {
+  const results = await db.select().from(Invoices)
+  console.log(results);
+
   return (
     <main className="flex flex-col justify-center h-full text-center gap-6 max-w-5xl mx-auto my-12">
       <div className="flex justify-between">
@@ -54,33 +59,37 @@ export default function Home() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="text-left p-4">
-              <span className="font-semibold">
-                12/16/2024
-              </span>
-            </TableCell>
-            <TableCell className="text-left p-4">
-              <span className="font-semibold">
-                Michael Scott
-              </span>
-            </TableCell>
-            <TableCell className="text-left p-4">
-              <span>
-                michael@dunder.com
-              </span>
-            </TableCell>
-            <TableCell className="text-center p-4">
-              <Badge className="rounded-full">
-                Open
-              </Badge>
-            </TableCell>
-            <TableCell className="text-right p-4">
-              <span className="font-semibold">
-                $250.00
-              </span>
-            </TableCell>
-          </TableRow>
+          {results.map((result) => {
+            return (
+              <TableRow key={result.id}>
+                <TableCell className="text-left p-4">
+                  <span className="font-semibold">
+                    {new Date(result.createTs).toLocaleDateString()}
+                  </span>
+                </TableCell>
+                <TableCell className="text-left p-4">
+                  <span className="font-semibold">
+                    Jared Lemke
+                  </span>
+                </TableCell>
+                <TableCell className="text-left p-4">
+                  <span>
+                    jared@lemke.com
+                  </span>
+                </TableCell>
+                <TableCell className="text-center p-4">
+                  <Badge className="rounded-full">
+                    {result.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right p-4">
+                  <span className="font-semibold">
+                    ${(result.amount / 100).toFixed(2)}
+                  </span>
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </main>
