@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { Invoices } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 export default async function InvoicePage({ params }: { params: { invoiceId: string; } }) {
   const invoiceId = parseInt(params.invoiceId);
@@ -12,8 +13,10 @@ export default async function InvoicePage({ params }: { params: { invoiceId: str
     .where(eq(Invoices.id, invoiceId))
     .limit(1)
   
-  console.log(result);
-
+  if (!result) {
+    return notFound();
+  }
+  
   return (
     <main className="h-full max-w-5xl mx-auto my-12">
       <div className="flex justify-between mb-8">
