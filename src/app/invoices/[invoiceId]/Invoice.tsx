@@ -11,10 +11,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
 import { AVAILABLE_STATUSES } from "@/data/invoices";
-import { updateStatusAction } from "@/app/actions";
-import { ChevronDown } from 'lucide-react';
+import { updateStatusAction, deleteInvoiceAction } from "@/app/actions";
+import { ChevronDown, Ellipsis, Trash2 } from 'lucide-react';
 
 interface InvoiceProps {
   invoice: typeof Invoices.$inferSelect;
@@ -51,29 +60,72 @@ export default function Invoice({ invoice }: InvoiceProps) {
               {currentStatus}
             </Badge>
           </h1>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                Change Status
-                <ChevronDown className="w-4 h-auto" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {AVAILABLE_STATUSES.map((status) => {
-                return (
-                  <DropdownMenuItem key={status.id}>
-                    <form action={handleOnUpdateStatus}>
-                      <button>
+          <div className="flex gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  Change Status
+                  <ChevronDown className="w-4 h-auto" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {AVAILABLE_STATUSES.map((status) => {
+                  return (
+                    <DropdownMenuItem key={status.id}>
+                      <form action={handleOnUpdateStatus}>
                         <input type="hidden" name="id" value={invoice.id} />
                         <input type="hidden" name="status" value={status.id} />
-                        {status.label}
+                        <button>
+                          {status.label}
+                        </button>
+                      </form>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Dialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <span className="sr-only">More Options</span>
+                    <Ellipsis className="w-4 h-auto" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <DialogTrigger asChild>
+                      <button className="flex items-center gap-2">
+                        <Trash2 className="w-4 h-auto" />
+                        Delete Invoice
                       </button>
-                    </form>
+                    </DialogTrigger>    
                   </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DialogContent>
+                <DialogHeader className="gap-2">
+                  <DialogTitle className="text-2xl">
+                    Delete Invoice?
+                  </DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your invoice
+                    and remove your data from our servers.
+                  </DialogDescription>
+                  <DialogFooter>
+                    <form action={deleteInvoiceAction}>
+                      <input type="hidden" name="id" value={invoice.id} />
+                      <Button variant="destructive" className="flex items-center gap-2">
+                        <Trash2 className="w-4 h-auto" />
+                        Delete Invoice
+                      </Button>
+                    </form>
+                  </DialogFooter>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <p className="text-3xl mb-3">
